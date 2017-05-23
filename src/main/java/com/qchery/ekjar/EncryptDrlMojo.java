@@ -1,6 +1,7 @@
 package com.qchery.ekjar;
 
-import org.apache.commons.codec.binary.Base64;
+import com.qchery.ekjar.encrypt.DefaultEncryptProvider;
+import com.qchery.ekjar.encrypt.EncryptAlgorithm;
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
@@ -26,6 +27,9 @@ public class EncryptDrlMojo extends AbstractMojo {
      */
     @Parameter(required = true, defaultValue = "${project.build.outputDirectory}")
     private File outputDirectory;
+
+    @Parameter
+    private EncryptAlgorithm algorithm;
 
     @Override
     public void execute() throws MojoExecutionException, MojoFailureException {
@@ -54,7 +58,7 @@ public class EncryptDrlMojo extends AbstractMojo {
 
                 byte[] bytes = baos.toByteArray();
 
-                String base64String = Base64.encodeBase64String(bytes);
+                String base64String = new DefaultEncryptProvider().encryptToString(bytes);
 
                 writeContent(file, base64String);
 
@@ -65,7 +69,6 @@ public class EncryptDrlMojo extends AbstractMojo {
             } finally {
                 closeQuietly(baos);
                 closeQuietly(bis);
-
             }
         }
 
